@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Решатель</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="wordle-grid">
+            <!-- Создание 5 строк по 5 инпутов для ввода букв -->
+            <div class="row" id="row1"></div>
+            <div class="row" id="row2"></div>
+            <div class="row" id="row3"></div>
+            <div class="row" id="row4"></div>
+            <div class="row" id="row5"></div>
+        </div>
+        <!-- <button id="solve">Подсказать слова</button> -->
+        <div id="suggestions-container">
+            <h4 id="suggestions-count">Подходящих слов: 0</h4>
+            <div id="suggestions"></div>
+        </div>
+    </div>
+
+
+    <script src="glossary.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
