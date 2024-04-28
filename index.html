@@ -12,19 +12,65 @@
 
     <div class="container">
         <div id="wordle-grid">
-            <!-- Создание 5 строк по 5 инпутов для ввода букв -->
             <div class="row" id="row1"></div>
             <div class="row" id="row2"></div>
             <div class="row" id="row3"></div>
             <div class="row" id="row4"></div>
             <div class="row" id="row5"></div>
         </div>
-        <!-- <button id="solve">Подсказать слова</button> -->
+
         <div id="suggestions-container">
-            <h4 id="suggestions-count">Подходящих слов: 0</h4>
+            <span id="suggestions-count">Подходящих слов: 0</span>
             <div id="suggestions"></div>
         </div>
+
+        <div class="keyboard">
+            
+            <div class="keyboard-row">
+                <button class="key">й</button>
+                <button class="key">ц</button>
+                <button class="key">у</button>
+                <button class="key">к</button>
+                <button class="key">е</button>
+                <button class="key">н</button>
+                <button class="key">г</button>
+                <button class="key">ш</button>
+                <button class="key">щ</button>
+                <button class="key">з</button>
+                <button class="key">х</button>
+                <button class="key">ъ</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key">ф</button>
+                <button class="key">ы</button>
+                <button class="key">в</button>
+                <button class="key">а</button>
+                <button class="key">п</button>
+                <button class="key">р</button>
+                <button class="key">о</button>
+                <button class="key">л</button>
+                <button class="key">д</button>
+                <button class="key">ж</button>
+                <button class="key">э</button>
+            </div>
+            <div class="keyboard-row">
+                <button id="enter-key" class="key">&#9989;</button>
+                <button class="key">я</button>
+                <button class="key">ч</button>
+                <button class="key">с</button>
+                <button class="key">м</button>
+                <button class="key">и</button>
+                <button class="key">т</button>
+                <button class="key">ь</button>
+                <button class="key">б</button>
+                <button class="key">ю</button>
+                <button id="backspase-key" class="key">&#10060;</button>
+            </div>
+        </div>
+
     </div>
+
+
 
 
     <script src="glossary.js"></script>
