@@ -50,6 +50,7 @@ body {
     /* Минимальная высота для видимости без содержимого */
     border: 1px solid;
     border-radius: 3px;
+    text-transform: uppercase;
 }
 
 .cell:last-child {
