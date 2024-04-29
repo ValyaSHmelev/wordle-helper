@@ -22,7 +22,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 200px;
-    height: 200px;
+    height: 250px;
     margin-bottom: 10px;
 }
 
@@ -79,6 +79,13 @@ body {
     /* Занимает всю доступную ширину */
 }
 
+.suggestion{
+    background-color: aliceblue;
+    padding: 10px;
+    margin-left: 5px;
+    border-radius: 40%;
+}
+
 
 div[data-state="correct"].cell {
     background-color: yellow;
@@ -103,7 +110,7 @@ div[data-state="absent"].cell {
 }
 
 .key {
-    padding: 5px 10px;
+    padding: 5px;
     margin: 5px;
     border: none;
     border-radius: 5px;

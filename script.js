@@ -5,61 +5,27 @@ const state = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initializeGrid();
+    // initializeGrid();
     displaySuggestions(words)
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.addEventListener('dblclick', (e) => handleDoubleClick(e.target))
+    })
 
-    // document.getElementById('solve').addEventListener('click', () => {
-    //     // Здесь будет логика для подбора слов
-    //     console.log('Поиск подходящих слов...');
-    //     filterWords();
-    // });
 });
 
-function initializeGrid() {
-    for (let i = 1; i <= 5; i++) {
-        const row = document.getElementById(`row${i}`);
-        for (let j = 0; j < 5; j++) {
-            const cell = document.createElement('div')
-            cell.classList = 'cell'
-            cell.id = `cell${j + 1}`
-            // cell.innerText = 'а'
-            // const input = document.createElement('input');
-            // input.setAttribute('maxlength', '1');
-            // Убираем установку начального состояния 'absent'
-            // input.addEventListener('keydown', (e) => handleKeydown(e, j, i));
-            cell.addEventListener('dblclick', (e) => handleDoubleClick(e.target));
-            row.appendChild(cell);
-        }
-    }
-}
+// function initializeGrid() {
+//     for (let i = 1; i <= 6; i++) {
+//         const row = document.getElementById(`row${i}`);
+//         for (let j = 0; j < 5; j++) {
+//             const cell = document.createElement('div')
+//             cell.classList = 'cell'
+//             cell.id = `cell${j + 1}`
+//             cell.addEventListener('dblclick', (e) => handleDoubleClick(e.target));
+//             row.appendChild(cell);
+//         }
+//     }
+// }
 
-
-function handleKeydown(e, inputIndex, rowIndex) {
-    // Проверяем, нажата ли клавиша Backspace
-    if (e.key === 'Backspace') {
-        setTimeout(() => { // Используем setTimeout для обработки после обновления значения инпута
-            if (e.target.value === '') {
-                // Если инпут пустой после нажатия Backspace, удаляем состояние
-                e.target.removeAttribute('data-state');
-            }
-            // Перемещаем фокус на предыдущий инпут, если это не первый инпут в строке
-            if (inputIndex > 0) {
-                const previousInput = document.getElementById(`row${rowIndex}`).children[inputIndex - 1];
-                previousInput.focus();
-            }
-        }, 0);
-    } else if (e.key.length === 1 && e.key.match(/[а-я]/i)) {
-        // Если нажата буква, устанавливаем состояние 'absent' для инпута
-        e.target.setAttribute('data-state', 'absent');
-        // Перемещаем фокус на следующий инпут после ввода буквы
-        if (inputIndex < 4) {
-            setTimeout(() => { // Используем setTimeout для корректной обработки ввода
-                document.getElementById(`row${rowIndex}`).children[inputIndex + 1].focus();
-            }, 0);
-        }
-    }
-    filterWords();
-}
 
 function handleDoubleClick(cell) {
     // Проверяем, есть ли значение в инпуте перед изменением его состояния
@@ -102,7 +68,7 @@ function filterWords() {
                 const letter = cell.innerText.toLowerCase();
                 const state = cell.getAttribute('data-state');
                 if (state === 'correct') rules.correct.push({ index: cellIndex, letter: letter })
-                if (state === 'present') rules.present.push(letter)
+                if (state === 'present') rules.present.push({ notAtIdx: cellIndex, letter: letter })
                 if (state === 'absent') rules.absent.push(letter)
             });
         }
@@ -110,7 +76,7 @@ function filterWords() {
 
     filteredWords = filteredWords.filter(word => {
         const allAbsent = rules.absent.every(letter => !word.includes(letter))
-        const allPresent = rules.present.every(letter => word.includes(letter))
+        const allPresent = rules.present.every(el => word.includes(el.letter) && word[el.notAtIdx] != el.letter)
         const allCorrect = rules.correct.every(el => word[el.index] === el.letter)
         return allAbsent && allPresent && allCorrect
     })
@@ -124,11 +90,30 @@ function displaySuggestions(suggestions) {
     suggestionsElement.innerHTML = ''; // Очистка предыдущих предложений
     suggestionsCountElement.textContent = `Подходящих слов: ${suggestions.length}`; // Обновление количества подходящих слов
 
-    shuffleArray(suggestions)
-    sortUniqueFirst(suggestions)
+    // shuffleArray(suggestions)
+    // sortUniqueFirst(suggestions)
 
-    suggestionsElement.innerText = suggestions.join(', ')
+    const sortedSuggestions = sortStringsByRelevance(suggestions)
 
+    const fragment = document.createDocumentFragment();
+
+    sortedSuggestions.forEach(suggestion => {
+        const $suggestion = document.createElement('span');
+        $suggestion.innerText = suggestion;
+        $suggestion.classList.add('suggestion');
+        $suggestion.addEventListener('click', handleSuggestion)
+        fragment.appendChild($suggestion);
+    })
+
+    suggestionsElement.appendChild(fragment);
+
+}
+
+function handleSuggestion(e) {
+    const word = e.target.innerText
+    const cells = document.querySelector('#row' + state.curRow).querySelectorAll('.cell')
+    cells.forEach((cell, i) => cell.innerText = word[i])
+    state.curCell = 5
 }
 
 function getCurCell() {
@@ -161,13 +146,11 @@ function handleBackspace() {
         return
     }
 
-
-    console.log(state);
 }
 
 function handleEnter() {
 
-    if (state.curRow < 5 && state.curCell == 5) {
+    if (state.curRow < 6 && state.curCell == 5) {
         const curRow = document.getElementById(`row${state.curRow}`)
         curRow.querySelectorAll('.cell').forEach(cell => cell.setAttribute('data-state', 'absent'))
         state.curCell = 1
@@ -189,7 +172,6 @@ function handleKey(e) {
     if (state.curCell < 5) {
         state.curCell++
     }
-    console.log(state);
 }
 
 document.getElementById('enter-key').addEventListener('click', handleEnter)
@@ -224,4 +206,39 @@ function sortUniqueFirst(arr) {
         // Если первая строка уникальна, она должна быть выше второй
         return aUnique ? -1 : 1;
     });
+}
+
+function sortStringsByRelevance(words = []) {
+    console.time('time');
+
+    // 1. Создаем инвертированный индекс (мапа буква -> множество слов)
+    const invertedIndex = new Map();
+    words.forEach(word => {
+        for (const letter of word) {
+            if (!invertedIndex.has(letter)) {
+                invertedIndex.set(letter, new Set());
+            }
+            invertedIndex.get(letter).add(word);
+        }
+    });
+
+    // 2. Вычисляем релевантность для каждого слова
+    const relevanceScores = new Map();
+    words.forEach(word => {
+        const relatedWords = new Set();
+        for (const letter of word) {
+            const wordsWithLetter = invertedIndex.get(letter);
+            wordsWithLetter.forEach(relatedWord => relatedWords.add(relatedWord));
+        }
+        // Удаляем само слово из множества связанных слов
+        relatedWords.delete(word);
+        relevanceScores.set(word, relatedWords.size);
+    });
+
+    console.timeEnd('time');
+
+    // 3. Сортируем слова по релевантности
+    return Array.from(relevanceScores.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(entry => entry[0]);
 }
